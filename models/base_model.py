@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-    The base model of AirBnB project
+The module introduces BaseModel of AirBnB project
 """
 from datetime import datetime
 import uuid
@@ -8,10 +8,18 @@ import uuid
 
 class BaseModel:
     """
-        Base class
+    BaseModel a class that defines all common attributes
+    for other classes.
     """
+
     def __init__(self, *args, **kwargs):
-        """ Initialization"""
+        """
+        Initializes a new instance of the BaseModel class.
+        Args:
+            *args: Variable length of arguement list.
+            **kwargs: Arbitrary keyword arguements.
+        """
+
         if (len(kwargs) == 0):
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
@@ -19,33 +27,41 @@ class BaseModel:
         else:
             for key, value in kwargs.items():
                 if (key == '__class__'):
-                    pass
-                elif (key == 'id'):
-                    self.id = value
-                elif (key == 'created_at'):
-                    self.created_at = datetime.fromisoformat(value)
-                elif (key == 'updated_at'):
-                    self.updated_at = datetime.fromisoformat(value)
-                elif (key == 'name'):
-                    self.name = value
-
+                    continue
+                elif key == 'created_at' or key == 'updated_at':
+                    setattr(self, key, datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f"))
+                else:
+                    setattr(self, key, value)
 
     def __str__(self):
-        """ Prints class attributes"""
+        """
+        Method that returns a string rep of BaeModel instance.
+        """
+
         print('[{}] ({}) {}'.format(self.__class__.__name__, self.id, self.to_dict()))  
         return ('[{}] ({}) {}'.format(self.__class__.__name__, self.id, self.to_dict()))
 
-
     def save(self):
-        """ save """
+        """
+        Method that saves the current intance.
+        """
+
         self.updated_at = datetime.now()
 
-
     def to_dict(self):
-        """ Returns dict representation of class instance """
+        """ 
+        Returns dictionary representation of class instance.
+        Returns:
+            Dict: The dictionary representation
+        """
+
         result = self.__dict__.copy()
         result['__class__'] =  self.__class__.__name__
         result['id'] = self.id
         result['updated_at'] = self.updated_at.isoformat()
         result['created_at'] = self.created_at.isoformat()
         return (result)
+
+
+if __name__ == '__main__':
+    unittest.main()
